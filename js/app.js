@@ -15,7 +15,7 @@ function initializeApp() {
             }
             return originalFetch.apply(this, args);
         };
-    }
+    }   
     
     setupGlobalEvents();
 }

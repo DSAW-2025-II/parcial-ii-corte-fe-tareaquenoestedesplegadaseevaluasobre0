@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', function() {
     loginStatus = document.getElementById('login-status');
     authStatus = document.getElementById('auth-status');
     tokenStatus = document.getElementById('token-status');
-    
+      
     setupAuthEvents();
     checkExistingToken();
     updateSystemInfo();
