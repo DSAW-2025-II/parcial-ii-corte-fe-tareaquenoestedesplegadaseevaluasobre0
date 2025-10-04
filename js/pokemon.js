@@ -1,5 +1,7 @@
+//Contenido del DOM
 let searchBtn, pokemonInput, resultsContainer;
 
+//Inicialización al cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
     searchBtn = document.getElementById('search-btn');
     pokemonInput = document.getElementById('pokemon-input');
@@ -8,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupPokemonEvents();
 });
 
+//Event listeners para buscar Pokemones
 function setupPokemonEvents() {
     searchBtn.addEventListener('click', handleSearch);
     
@@ -18,13 +21,17 @@ function setupPokemonEvents() {
     });
 }
 
+//Manejo de búsqueda del Pokémon
 async function handleSearch() {
+    //Obtener el nombre del Pokémon
     const pokemonName = pokemonInput.value.trim();
     
+    //Si el nombre está vacío se muestra un error
     if (!pokemonName) {
         showPokemonError('Por favor, ingresa el nombre de un Pokémon');
         return;
     }
+
 
     try {
         // Estado de carga
@@ -32,27 +39,28 @@ async function handleSearch() {
         searchBtn.innerHTML = '<span class="loading"></span> Consultando...';
         showPokemonLoading();
 
+        //Token de autenticación
         const token = getToken();
         
-        // VERIFICAR AUTENTICACIÓN
+        //Verificación del token de autenticación
         if (!token) {
             throw new Error('No autenticado. Inicia sesión primero.');
         }
-
-        console.log(`🔍 Buscando Pokémon: ${pokemonName}`);
         
-        // COMUNICACIÓN SOLO CON BACKEND (como exige la rúbrica)
+        //Comunicación hacia el Backend para obtener detalles del Pokémon
         const response = await fetch(`${CONFIG.BASE_URL}/pokemonDetails`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}` // Header exacto como pide el examen
+                'Authorization': `Bearer ${token}` //Header de autenticación
             },
             body: JSON.stringify({ pokemonName: pokemonName })
         });
 
+        //Parseo a JSON de la respuesta
         const data = await response.json();
 
+        //Manejo de respuestas del backend
         if (response.status === 200) {
             if (data.name && data.species) {
                 displayPokemonData(data);
@@ -60,10 +68,12 @@ async function handleSearch() {
                 showPokemonNotFound();
             }
         } else if (response.status === 403) {
-            // Intentar renovar autenticación automáticamente y reintentar una vez
+            //Renovación de  autenticación
             try {
+                // Intento de re-autenticación
                 await handleLogin();
-                const retryToken = getToken();
+                const retryToken = getToken(); // Nuevo token
+                //Reintento de la búsqueda con el nuevo token
                 const retryRes = await fetch(`${CONFIG.BASE_URL}/pokemonDetails`, {
                     method: 'POST',
                     headers: {
@@ -72,23 +82,28 @@ async function handleSearch() {
                     },
                     body: JSON.stringify({ pokemonName: pokemonName })
                 });
+
+                //Parseo a JSON de la respuesta nueva
                 const retryData = await retryRes.json();
+
+                //Manejo de respuestas del backend
                 if (retryRes.status === 200) {
                     if (retryData.name && retryData.species) {
-                        displayPokemonData(retryData);
+                        displayPokemonData(retryData); //Reintento exitoso
                     } else {
-                        showPokemonNotFound();
+                        showPokemonNotFound(); //No se encontró el Pokémon
                     }
                 } else if (retryRes.status === 400) {
-                    showPokemonNotFound();
+                    showPokemonNotFound(); //No se encontró el Pokémon
                 } else {
                     throw new Error(retryData.error || 'Error en la búsqueda');
                 }
             } catch (e) {
+                //Fallo en la re-autenticación
                 throw new Error('User not authenticated');
             }
         } else if (response.status === 400) {
-            showPokemonNotFound();
+            showPokemonNotFound(); //No se encontró el Pokémon
         } else {
             throw new Error(data.error || 'Error en la búsqueda');
         }
@@ -108,7 +123,7 @@ async function handleSearch() {
     }
 }
 
-
+//Manipulación del DOM para mostrar los datos del Pokémon
 function displayPokemonData(pokemon) {
     const html = `
         <div class="pokemon-card">
@@ -130,11 +145,13 @@ function displayPokemonData(pokemon) {
         </div>
     `;
     
+    // Actualización del contenedor de resultados
     resultsContainer.innerHTML = html;
 }
 
+//Mostrar mensaje de Pokémon no encontrado
 function showPokemonNotFound() {
-    
+    //Manipulación del DOM para mostrar el error
     const html = `
         <div class="pokemon-card">
             <div style="text-align: center; padding: 30px;">
@@ -150,6 +167,7 @@ function showPokemonNotFound() {
     resultsContainer.innerHTML = html;
 }
 
+//Mostrar estado de carga
 function showPokemonLoading() {
     const html = `
         <div class="pokemon-card">
@@ -162,6 +180,7 @@ function showPokemonLoading() {
     resultsContainer.innerHTML = html;
 }
 
+//Mostrar mensaje de error
 function showPokemonError(message) {
     const html = `
         <div class="pokemon-card">
@@ -175,6 +194,7 @@ function showPokemonError(message) {
     resultsContainer.innerHTML = html;
 }
 
+//Limpieza del contenedor de resultados para reiniciar el estado
 function clearPokemonResults() {
     resultsContainer.innerHTML = `
         <div class="placeholder">
@@ -183,7 +203,7 @@ function clearPokemonResults() {
     `;
 }
 
-// Utilidad para capitalizar
+//Poner en mayúscula la primera letra del pokemon
 function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
 }

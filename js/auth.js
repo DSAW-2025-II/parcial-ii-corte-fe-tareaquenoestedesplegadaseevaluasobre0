@@ -1,33 +1,36 @@
+//Variables de entorno
 const BASE_URL = CONFIG.BASE_URL;
-const TOKEN_KEY = 'sessionToken'; 
+const TOKEN_KEY = CONFIG.TOKEN_KEY; 
 
+//Elementos del DOM
 let loginBtn, loginStatus;
 
+//Inicialización al cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
     loginBtn = document.getElementById('login-btn');
     loginStatus = document.getElementById('login-status');
-      
     setupAuthEvents();
     checkExistingToken();
 });
 
+//Event listeners para la autenticación
 function setupAuthEvents() {
     loginBtn.addEventListener('click', handleLogin);
 }
 
+//Manejo del login
 async function handleLogin() {
+
     try {
         // Estado de carga
         loginBtn.disabled = true;
         loginBtn.textContent = 'Autenticando...';
         showStatus('Conectando con el backend...', 'info');
 
-        // CREDENCIALES EXACTAS como pide el examen
-        const credentials = {
-            email: 'admin@admin.com',
-            password: 'admin'
-        };
+        //Credenciales guardadas en .env y config.js
+        const credentials = CONFIG.CREDENTIALS;
 
+        // Petición al endpoint de autenticación
         const response = await fetch(`${BASE_URL}/auth`, {
             method: 'POST',
             headers: {
@@ -36,47 +39,46 @@ async function handleLogin() {
             body: JSON.stringify(credentials)
         });
 
+        //Respuesta del Backend en JSON
         const data = await response.json();
 
-        // MANEJO DE RESPUESTAS SEGÚN RÚBRICA
+        //Manejo de las respuestas
         if (response.ok && data.token) {
-            // ✅ LOGIN EXITOSO - Guardar token como pide el examen
+            //Guardado del token en localStorage
             localStorage.setItem(TOKEN_KEY, data.token);
             
-            // UI para éxito
+            //Estado de éxito
             showStatus('Autenticación exitosa', 'success');
             
-            // Ocultar botón de login
+            //Display nulo del botón de login
             loginBtn.style.display = 'none';
             
             // Mostrar secciones protegidas
             showProtectedSections();
             
-            console.log('✅ Login exitoso. Token almacenado como:', TOKEN_KEY);
-            
-        } else if (response.status === 400) {
-            // ❌ CREDENCIALES INVÁLIDAS - Como especifica el examen
+        } else if (response.status === 400) { //Manejo de errores
+            //Credenciales inválidas
             throw new Error('invalid credentials');
         } else {
+            //Errores en autenticación
             throw new Error(data.error || 'Error en la autenticación');
         }
 
     } catch (error) {
-        console.error('❌ Error en autenticación:', error);
-        
-        // Manejo específico de errores según rúbrica
+        // Manejo de errores
         if (error.message === 'invalid credentials') {
-            showStatus('❌ Error: Credenciales inválidas', 'error');
+            showStatus('Error: Credenciales inválidas', 'error');
         } else {
-            showStatus(`❌ Error: ${error.message}`, 'error');
+            showStatus(`Error: ${error.message}`, 'error');
         }
         
+        //Habilitación del botón de login
         loginBtn.disabled = false;
         loginBtn.textContent = 'Iniciar Sesión';
     }
 }
 
-// VERIFICAR TOKEN EXISTENTE
+//Verificación de token
 function checkExistingToken() {
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
@@ -86,18 +88,18 @@ function checkExistingToken() {
     }
 }
 
-// MOSTRAR SECCIONES PROTEGIDAS
+//Mostrar el resto del contenido
 function showProtectedSections() {
     document.getElementById('search-section').classList.remove('hidden');
     document.getElementById('results-section').classList.remove('hidden');
 }
 
-// OBTENER TOKEN (para uso en otros módulos)
+//Get para el token
 function getToken() {
     return localStorage.getItem(TOKEN_KEY);
 }
 
-// MOSTRAR ESTATUS
+//Mostrar estado
 function showStatus(message, type) {
     loginStatus.classList.remove('hidden');
     loginStatus.textContent = message;

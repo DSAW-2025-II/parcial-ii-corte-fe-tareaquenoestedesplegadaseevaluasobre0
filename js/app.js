@@ -1,15 +1,16 @@
-// ARCHIVO PRINCIPAL - Coordinación y utilidades
+//Se ejecuta al cargar el DOM
 document.addEventListener('DOMContentLoaded', function() {
     initializeApp();
 });
 
+//Inicialización de la aplicación
 function initializeApp() {
-    // Verificar que no haya comunicación directa con PokeAPI
+    //Verificación para bloquear fetch directo a la APi
     if (typeof fetch === 'function') {
         const originalFetch = window.fetch;
         window.fetch = function(...args) {
             const url = args[0];
-            // BLOQUEAR cualquier intento de comunicación directa con PokeAPI
+            //Bloqueo de llamadas directas a la API
             if (typeof url === 'string' && url.includes('pokeapi.co')) {
                 throw new Error('El frontend no se puede comunicar con la API');
             }
@@ -17,11 +18,12 @@ function initializeApp() {
         };
     }   
     
+    //Inicialización de módulos
     setupGlobalEvents();
 }
 
 function setupGlobalEvents() {
-    // Limpiar resultados cuando el input esté vacío
+    //Limpieza de resultados al modificar el input
     const pokemonInput = document.getElementById('pokemon-input');
     if (pokemonInput) {
         pokemonInput.addEventListener('input', function() {
@@ -31,7 +33,6 @@ function setupGlobalEvents() {
         });
     }
     
-    console.log('✅ App inicializada correctamente');
 }
 
 // Función global para obtener token
