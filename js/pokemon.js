@@ -155,7 +155,7 @@ function showPokemonNotFound() {
     const html = `
         <div class="pokemon-card">
             <div style="text-align: center; padding: 30px;">
-                <h3 style="color: #dc0a2d; margin-bottom: 15px;">¡Ups! Pokémon no encontrado</h3>
+                <h3 style="color: #dc0a2d; margin-bottom: 15px;">Ups! Pokémon no encontrado</h3>
                 <p>El Pokémon que buscas no existe en la Pokédex.</p>
                 <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
                     Verifica el nombre e intenta nuevamente.
