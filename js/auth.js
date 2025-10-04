@@ -1,17 +1,14 @@
 const BASE_URL = CONFIG.BASE_URL;
 const TOKEN_KEY = 'sessionToken'; 
 
-let loginBtn, loginStatus, authStatus, tokenStatus;
+let loginBtn, loginStatus;
 
 document.addEventListener('DOMContentLoaded', function() {
     loginBtn = document.getElementById('login-btn');
     loginStatus = document.getElementById('login-status');
-    authStatus = document.getElementById('auth-status');
-    tokenStatus = document.getElementById('token-status');
       
     setupAuthEvents();
     checkExistingToken();
-    updateSystemInfo();
 });
 
 function setupAuthEvents() {
@@ -22,7 +19,7 @@ async function handleLogin() {
     try {
         // Estado de carga
         loginBtn.disabled = true;
-        loginBtn.innerHTML = '<span class="loading"></span> Autenticando...';
+        loginBtn.textContent = 'Autenticando...';
         showStatus('Conectando con el backend...', 'info');
 
         // CREDENCIALES EXACTAS como pide el examen
@@ -47,13 +44,13 @@ async function handleLogin() {
             localStorage.setItem(TOKEN_KEY, data.token);
             
             // UI para éxito
-            showStatus('✅ ¡Autenticación exitosa! Token guardado en localStorage.', 'success');
-            loginBtn.textContent = '🔓 Sesión Iniciada';
-            loginBtn.disabled = true;
+            showStatus('Autenticación exitosa', 'success');
+            
+            // Ocultar botón de login
+            loginBtn.style.display = 'none';
             
             // Mostrar secciones protegidas
             showProtectedSections();
-            updateAuthStatus();
             
             console.log('✅ Login exitoso. Token almacenado como:', TOKEN_KEY);
             
@@ -75,7 +72,7 @@ async function handleLogin() {
         }
         
         loginBtn.disabled = false;
-        loginBtn.textContent = '🔓 Iniciar Sesión Automática';
+        loginBtn.textContent = 'Iniciar Sesión';
     }
 }
 
@@ -85,10 +82,7 @@ function checkExistingToken() {
     if (token) {
         console.log('✅ Token existente encontrado en localStorage');
         showProtectedSections();
-        updateAuthStatus();
-        loginBtn.textContent = '🔓 Sesión Iniciada';
-        loginBtn.disabled = true;
-        showStatus('Sesión activa encontrada', 'success');
+        loginBtn.style.display = 'none';
     }
 }
 
@@ -98,23 +92,6 @@ function showProtectedSections() {
     document.getElementById('results-section').classList.remove('hidden');
 }
 
-// ACTUALIZAR ESTADO DE AUTENTICACIÓN EN UI
-function updateAuthStatus() {
-    const token = localStorage.getItem(TOKEN_KEY);
-    
-    if (token) {
-        authStatus.textContent = '✅ Autenticado';
-        authStatus.style.color = 'green';
-        tokenStatus.textContent = '✅ Sí';
-        tokenStatus.style.color = 'green';
-    } else {
-        authStatus.textContent = '❌ No autenticado';
-        authStatus.style.color = 'red';
-        tokenStatus.textContent = '❌ No';
-        tokenStatus.style.color = 'red';
-    }
-}
-
 // OBTENER TOKEN (para uso en otros módulos)
 function getToken() {
     return localStorage.getItem(TOKEN_KEY);
@@ -122,11 +99,7 @@ function getToken() {
 
 // MOSTRAR ESTATUS
 function showStatus(message, type) {
+    loginStatus.classList.remove('hidden');
     loginStatus.textContent = message;
     loginStatus.className = `status ${type}`;
-}
-
-// ACTUALIZAR INFORMACIÓN DEL SISTEMA
-function updateSystemInfo() {
-    document.getElementById('backend-url').textContent = BASE_URL;
 }

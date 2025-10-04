@@ -1,5 +1,3 @@
-// Use CONFIG.BASE_URL directly to avoid duplicate global constants
-
 let searchBtn, pokemonInput, resultsContainer;
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -96,7 +94,7 @@ async function handleSearch() {
         }
 
     } catch (error) {
-        console.error('❌ Error en búsqueda:', error);
+        console.error('Error en búsqueda:', error);
         
         // Manejo específico de errores de autenticación
         if (error.message === 'User not authenticated') {
@@ -106,14 +104,12 @@ async function handleSearch() {
         }
     } finally {
         searchBtn.disabled = false;
-        searchBtn.textContent = '🐱‍👤 Buscar en PokéAPI';
+        searchBtn.textContent = 'Buscar';
     }
 }
 
 
 function displayPokemonData(pokemon) {
-    console.log('✅ Pokémon encontrado:', pokemon);
-    
     const html = `
         <div class="pokemon-card">
             <img src="${pokemon.img_url}" 
@@ -131,9 +127,6 @@ function displayPokemonData(pokemon) {
                     <span class="detail-value">${pokemon.weight} kg</span>
                 </div>
             </div>
-            <div style="margin-top: 15px; padding: 10px; background: #d4edda; border-radius: 8px;">
-                <small>✅ Pokémon encontrado exitosamente</small>
-            </div>
         </div>
     `;
     
@@ -145,7 +138,6 @@ function showPokemonNotFound() {
     const html = `
         <div class="pokemon-card">
             <div style="text-align: center; padding: 30px;">
-                <div style="font-size: 3em; margin-bottom: 15px;">❌</div>
                 <h3 style="color: #dc0a2d; margin-bottom: 15px;">¡Ups! Pokémon no encontrado</h3>
                 <p>El Pokémon que buscas no existe en la Pokédex.</p>
                 <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
@@ -163,10 +155,6 @@ function showPokemonLoading() {
         <div class="pokemon-card">
             <div style="text-align: center; padding: 40px;">
                 <div class="loading" style="width: 40px; height: 40px; margin: 0 auto 20px;"></div>
-                <p>Consultando PokéAPI a través del backend...</p>
-                <p style="font-size: 0.9em; color: #666; margin-top: 10px;">
-                    🔒 Comunicación segura: FE → BE → PokeAPI
-                </p>
             </div>
         </div>
     `;
@@ -178,7 +166,7 @@ function showPokemonError(message) {
     const html = `
         <div class="pokemon-card">
             <div style="text-align: center; padding: 30px;">
-                <h3 style="color: #dc3545; margin-bottom: 15px;">⚠️ Error de Búsqueda</h3>
+                <h3 style="color: #dc3545; margin-bottom: 15px;">Error de Búsqueda</h3>
                 <p>${message}</p>
             </div>
         </div>
