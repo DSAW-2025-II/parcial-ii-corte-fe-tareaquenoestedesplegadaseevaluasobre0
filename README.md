@@ -4,6 +4,7 @@
 # 📝 Enunciado del examen
 
 Link BE: https://parcial-ii-corte-be-tareaquenoested.vercel.app/
+
 Link FE: https://parcial-ii-corte-fe-tareaquenoested.vercel.app/
 
 Vas a construir una **arquitectura de tres capas**:
@@ -162,8 +163,4 @@ fetch('/api/protected-route', {
 - **Despliegue**: 1.0  
 - **Seguridad de los endpoints** (uso correcto de tokens JWT): 2.0  
 - **Buenas prácticas de desarrollo** (variables de entorno, `.gitignore`, `express.Router`, middlewares): 0.5  
-- **Funcionalidad**: 1.5  
-
-
-
-
+- **Funcionalidad**: 1.5 
